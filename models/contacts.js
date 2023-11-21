@@ -49,10 +49,6 @@ export const removeContact = async (id) => {
 
 export const updateContact = async (id, body) => {
   const contacts = await listContacts();
-  const newContact = {
-    id: nanoid(),
-    ...body,
-  };
 
   const index = contacts.findIndex((contact) => contact.id === id);
 
@@ -60,7 +56,9 @@ export const updateContact = async (id, body) => {
     return;
   }
 
-  contacts.splice(index, 1, newContact);
+  const updatedContact = { ...contacts[index], ...body };
+
+  contacts.splice(index, 1, updatedContact);
 
   await stringyfyContacts(contacts);
 

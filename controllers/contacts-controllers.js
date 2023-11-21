@@ -1,12 +1,7 @@
-import Joi from 'joi';
 import contactService from '../models/contacts.js';
 import HttpError from '../helpers/HttpError.js';
-
-const contactAddSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().required(),
-  phone: Joi.string().required(),
-});
+import contactAddSchema from '../schemas/contactAddSchema.js';
+import contactUpdateSchema from '../schemas/contactUpdateSchema.js';
 
 const getAll = async (req, res) => {
   try {
@@ -65,7 +60,7 @@ const deleteContact = async (req, res, next) => {
 
 const updateContact = async (req, res, next) => {
   try {
-    const { error } = contactAddSchema.validate(req.body);
+    const { error } = contactUpdateSchema.validate(req.body);
 
     if (error) {
       throw HttpError(404, error);
