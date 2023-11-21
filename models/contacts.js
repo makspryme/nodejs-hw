@@ -60,7 +60,7 @@ export const updateContact = async (id, body) => {
 
   await stringyfyContacts(contacts);
 
-  return contacts;
+  return contacts[index];
 };
 
 export default {
