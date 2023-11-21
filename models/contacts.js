@@ -56,9 +56,7 @@ export const updateContact = async (id, body) => {
     return;
   }
 
-  const updatedContact = { ...contacts[index], ...body };
-
-  contacts.splice(index, 1, updatedContact);
+  contacts[index] = { ...contacts[index], ...body };
 
   await stringyfyContacts(contacts);
 
