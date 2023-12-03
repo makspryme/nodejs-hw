@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, Types, model } from 'mongoose';
 import Joi from 'joi';
 import * as hooks from '../hooks/hooks.js';
 
@@ -28,6 +28,10 @@ const contactSchema = new Schema(
     favorite: {
       type: Boolean,
       default: false,
+    },
+    owner: {
+      type: Schema.Types.ObjectId,
+      ref: 'user',
     },
   },
   { versionKey: false }
