@@ -15,7 +15,6 @@ const avatarPath = path.resolve('public', 'avatars');
 const signUp = async (req, res) => {
   const { email, password } = req.body;
   const dataBaseEmail = await User.findOne({ email });
-  console.log(dataBaseEmail);
   if (dataBaseEmail) {
     throw HttpError(409, 'Email already exist');
   }
@@ -95,8 +94,6 @@ const changeAvatar = async (req, res) => {
   ////
 
   await User.findByIdAndUpdate(_id, { avatarURL });
-  console.log(avatarURL);
-
   res.json({ avatarURL });
 };
 
