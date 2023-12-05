@@ -3,8 +3,14 @@ import HttpError from '../helpers/HttpError.js';
 import ctrlWrapper from '../decorators/ctrlWrapper.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import fs from 'fs/promises';
+import path from 'path';
+import Jimp from 'jimp';
+import gravatar from 'gravatar';
 
 const { JWT_SECRET } = process.env;
+
+const avatarPath = path.resolve('public', 'avatars');
 
 const signUp = async (req, res) => {
   const { email, password } = req.body;
@@ -16,9 +22,24 @@ const signUp = async (req, res) => {
 
   const hashPassword = await bcrypt.hash(password, 10);
 
+  let avatarURL = null;
+
+  if (req.file?.path && req.file?.filename) {
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarPath, filename);
+    await Jimp.read(oldPath).then((image) =>
+      image.resize(250, 250).write(oldPath)
+    );
+    avatarURL = path.join('avatars', filename);
+    await fs.rename(oldPath, newPath);
+  } else {
+    avatarURL = gravatar.url(req.body.email);
+  }
+
   const newUser = await User.create({
     ...req.body,
     password: hashPassword,
+    avatarURL,
   });
 
   res.status(201).json({
@@ -72,9 +93,29 @@ const getCurrentUser = async (req, res) => {
   res.json({ email, subscription });
 };
 
+const changeAvatar = async (req, res) => {
+  const { _id } = req.user;
+
+  ////
+  const { path: oldPath, filename } = req.file;
+  const newPath = path.join(avatarPath, filename);
+  await Jimp.read(oldPath).then((image) =>
+    image.resize(250, 250).write(oldPath)
+  );
+  const avatarURL = path.join('avatars', filename);
+  await fs.rename(oldPath, newPath);
+  ////
+
+  await User.findByIdAndUpdate(_id, { avatarURL });
+  console.log(avatarURL);
+
+  res.json({ avatarURL });
+};
+
 export default {
   signUp: ctrlWrapper(signUp),
   signIn: ctrlWrapper(signIn),
   getCurrentUser: ctrlWrapper(getCurrentUser),
   logout: ctrlWrapper(logout),
+  changeAvatar: ctrlWrapper(changeAvatar),
 };
