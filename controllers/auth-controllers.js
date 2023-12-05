@@ -22,19 +22,7 @@ const signUp = async (req, res) => {
 
   const hashPassword = await bcrypt.hash(password, 10);
 
-  let avatarURL = null;
-
-  if (req.file?.path && req.file?.filename) {
-    const { path: oldPath, filename } = req.file;
-    const newPath = path.join(avatarPath, filename);
-    await Jimp.read(oldPath).then((image) =>
-      image.resize(250, 250).write(oldPath)
-    );
-    avatarURL = path.join('avatars', filename);
-    await fs.rename(oldPath, newPath);
-  } else {
-    avatarURL = gravatar.url(req.body.email);
-  }
+  const avatarURL = gravatar.url(req.body.email);
 
   const newUser = await User.create({
     ...req.body,
