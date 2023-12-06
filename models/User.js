@@ -5,6 +5,10 @@ import * as hooks from '../hooks/hooks.js';
 const emailRegex =
   /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
+export const userVerifyEmailSchema = Joi.object({
+  email: Joi.string().pattern(emailRegex).required(),
+});
+
 export const userSignupSchema = Joi.object({
   email: Joi.string().pattern(emailRegex).required(),
   password: Joi.string().min(6).required(),
@@ -35,8 +39,17 @@ const userSchema = new Schema(
       type: String,
     },
     token: String,
+    verify: {
+      type: Boolean,
+      default: false,
+    },
+    verificationToken: {
+      type: String,
+      required: [true, 'Verify token is required'],
+    },
   },
-  { versionKey: false, timestamps: true }
+
+  { versionKey: false }
 );
 
 userSchema.post('save', hooks.handleSaveError);
