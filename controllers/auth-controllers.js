@@ -84,7 +84,16 @@ const changeAvatar = async (req, res) => {
   const { _id } = req.user;
 
   ////
-  const { path: oldPath, filename } = req.file;
+  // const { path: oldPath = undefined, filename = undefined } = req.file;
+  const oldPath = req.file?.path;
+  const filename = req.file?.filename;
+
+  console.log(oldPath);
+
+  if (!oldPath) {
+    throw HttpError(401, 'Not authorized');
+  }
+
   const newPath = path.join(avatarPath, filename);
   await Jimp.read(oldPath).then((image) =>
     image.resize(250, 250).write(oldPath)
