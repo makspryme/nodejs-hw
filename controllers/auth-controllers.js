@@ -143,10 +143,8 @@ const changeAvatar = async (req, res) => {
   const oldPath = req.file?.path;
   const filename = req.file?.filename;
 
-  console.log(oldPath);
-
-  if (!oldPath) {
-    throw HttpError(401, 'Not authorized');
+  if (!filename) {
+    throw HttpError(400, 'Must have file');
   }
 
   const newPath = path.join(avatarPath, filename);
